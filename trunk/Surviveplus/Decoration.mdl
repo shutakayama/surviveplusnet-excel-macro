@@ -1,0 +1,92 @@
+Attribute VB_Name = "Decoration"
+Option Explicit
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      選択されたセルを結合します。既に結合されているときは結合が解除されます。
+'   入力：      選択された複数のセル、あるいは結合されたセル。
+'   出力：      選択された複数のセルが結合されます。既に結合されているときは結合が解除されます。
+'   注釈：
+'   使用方法：  ショートカット Ctrl + Shift + T に割り当てるには、自作の auto_open プロシージャで
+'                       Call Application.OnKey( "+^T", "Surviveplus.xla!セル結合" )
+'                       を実行します。
+'   変更履歴：  SHIN-ICHI 2008/05/22 - オリジナル
+'   Copyright(C) 2009 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub セル結合()
+
+    With Selection
+        If .MergeCells = False Then
+            Call .Merge
+        Else
+            Call .UnMerge
+        End If
+    End With
+
+End Sub
+
+
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      よく使う等幅フォントに変更します。
+'   入力：      選択範囲
+'   出力：      選択範囲のフォントが変更されます。
+'   注釈：
+'   使用方法：  ショートカット Ctrl + Shift + O に割り当てるには、自作の auto_open プロシージャで
+'                       Call Application.OnKey( "+^O", "Surviveplus.xla!等幅フォントに変更" )
+'                       を実行します。
+'   変更履歴：  SHIN-ICHI 2008/07/19 - オリジナル
+'   Copyright(C) 2008 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub 等幅フォントに変更()
+
+    On Error Resume Next
+    With Selection.Font
+        .name = "HGｺﾞｼｯｸM"
+    End With
+End Sub
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      よく使うプロポーショナルフォントに変更します。
+'   入力：      選択範囲
+'   出力：      選択範囲のフォントが変更されます。
+'   注釈：
+'   使用方法：  ショートカット Ctrl + Shift + O に割り当てるには、自作の auto_open プロシージャで
+'                       Call Application.OnKey( "+^P", "Surviveplus.xla!プロポーショナルフォントに変更" )
+'                       を実行します。
+'   変更履歴：  SHIN-ICHI 2008/07/19 - オリジナル
+'   Copyright(C) 2008 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub プロポーショナルフォントに変更()
+
+    On Error Resume Next
+    With Selection.Font
+        .name = "HGPｺﾞｼｯｸM"
+    End With
+End Sub
+
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      中央の横線を消します。
+'   入力：      選択範囲
+'   出力：      選択範囲の中央の横線が消えます。
+'   注釈：
+'   使用方法：  ショートカット Ctrl + Shift + Alt + - に割り当てるには、自作の auto_open プロシージャで
+'                       Call Application.OnKey( "+^%-", "Surviveplus.xla!中央の横線を消す" )
+'                       を実行します。
+'   変更履歴：  SHIN-ICHI 2008/06/22 - オリジナル
+'   Copyright(C) 2008 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub 中央の横線を消す()
+
+    On Error Resume Next
+    Selection.Borders(xlInsideHorizontal).LineStyle = xlNone
+End Sub
+

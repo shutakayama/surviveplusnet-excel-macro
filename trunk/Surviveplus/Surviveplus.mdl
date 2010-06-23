@@ -1,0 +1,155 @@
+Attribute VB_Name = "Surviveplus"
+Option Explicit
+
+Dim directShortcuts As Object
+
+'------------------------------------------------------------------------
+'   目的：      このワークブックが開かれた時の処理を実行します。各マクロのショートカット キー を登録します。
+'   注釈：      別のショートカットキーを使用したい場合は、以下の行をコメントアウトするか削除して、別の設定を記述してください。
+'   使用方法：この内容を変更したら、Auto_Open を実行するか、Excel を再起動してください。その後にショートカットキーが有効になります。
+'   変更履歴：  SHIN-ICHI 2009/03/16 - マクロの指定にブック名を追加。コメントを追記。
+'   Copyright(C) 2009 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Private Sub Auto_Open()
+
+    ' 設定ファイルのキー指定方法
+    ' ^ : Ctrl キー
+    ' + : Shift キー
+    ' % : Alt キー
+    ' 詳細は msdn ヘルプ（ http://msdn.microsoft.com/ja-jp/library/cc384080.aspx ）等を参照。
+
+    Call 設定のショートカットを適用する
+
+End Sub
+
+Private Sub Auto_Close()
+
+    Call 設定のショートカットを解除する
+
+End Sub
+
+Private Sub 設定のショートカットを適用する()
+
+    If directShortcuts Is Nothing Then Set directShortcuts = CreateObject("Scripting.Dictionary")
+
+    Dim fileSystemObject As Object
+    Dim fileInfo As Object
+    Dim configFileInfo As Object
+    Dim dom As Object
+    
+    On Error GoTo Finally:
+    Set fileSystemObject = CreateObject("Scripting.FileSystemObject")
+    Set fileInfo = fileSystemObject.GetFile(Workbooks("Surviveplus.xla").FullName)
+   
+    Set dom = CreateObject("MSXML2.DOMDocument")
+    If dom.Load(fileInfo.ParentFolder & "\" & "Surviveplus.config") Then
+        Dim categoryNode As Object: Set categoryNode = Nothing
+        Dim shortcutNode As Object: Set shortcutNode = Nothing
+        
+        For Each categoryNode In dom.SelectNodes("/settings/shortcuts/shortcutCategory")
+            Dim categoryKey As String: categoryKey = categoryNode.GetAttribute("key")
+            If categoryKey = "{Direct}" Then
+                
+                For Each shortcutNode In categoryNode.ChildNodes
+                    With shortcutNode
+                        Dim keyText As String: keyText = .GetAttribute("key")
+                        Dim subName As String: subName = .GetAttribute("sub")
+                        
+                        Call Application.OnKey(keyText, subName)
+                        directShortcuts(keyText) = subName
+                    End With
+                Next shortcutNode
+            Else
+                Dim nameText As String: nameText = categoryNode.GetAttribute("name")
+                Call Application.OnKey(categoryKey, nameText)
+                directShortcuts(categoryKey) = nameText
+            End If
+        Next categoryNode
+    End If
+    
+    On Error GoTo 0
+Finally:
+    If Err.Number <> 0 Then MsgBox (Err.Description)
+    Set dom = Nothing
+    Set fileInfo = Nothing
+    Set fileSystemObject = Nothing
+
+End Sub
+
+Private Sub 設定のショートカットを解除する()
+
+    If directShortcuts Is Nothing Then Exit Sub
+    
+    On Error Resume Next
+    Dim keyText As Variant
+    For Each keyText In directShortcuts.Keys
+        Call Application.OnKey(keyText)
+    Next keyText
+    On Error GoTo 0
+
+    Set directShortcuts = Nothing
+End Sub
+
+Public Sub ショートカットメニューを表示する()
+    Call OpenAndExecuteShortcutMenu("Surviveplus.xla!ショートカットメニューを表示する")
+End Sub
+
+Private Sub OpenAndExecuteShortcutMenu(ByVal name As String)
+
+    Dim fileSystemObject As Object
+    Dim fileInfo As Object
+    Dim configFileInfo As Object
+    Dim dom As Object
+    Dim dialog As Object
+
+    On Error GoTo Finally:
+    Application.EnableCancelKey = xlDisabled
+    Set fileSystemObject = CreateObject("Scripting.FileSystemObject")
+    Set fileInfo = fileSystemObject.GetFile(Workbooks("Surviveplus.xla").FullName)
+   
+    Set dom = CreateObject("MSXML2.DOMDocument")
+    If dom.Load(fileInfo.ParentFolder & "\" & "Surviveplus.config") Then
+    
+    Dim shortcutNode As Object: Set shortcutNode = Nothing
+    Dim categoryNode As Object: Set categoryNode = Nothing
+    
+    For Each categoryNode In dom.SelectNodes("/settings/shortcuts/shortcutCategory")
+        If categoryNode.GetAttribute("key") <> "{Direct}" Then
+    
+            Dim categoryName As String: categoryName = categoryNode.GetAttribute("name")
+            If categoryName = name Then
+                Set dialog = CreateObject("Net.Surviveplus.LibrariesForMacro.ListDialog")
+                dialog.Title = "実行するマクロを選択してください。"
+                Dim item As Object
+                For Each shortcutNode In categoryNode.ChildNodes
+                
+                    With shortcutNode
+                        Set item = CreateObject("Net.Surviveplus.LibrariesForMacro.ListDialogItem")
+                        
+                        item.name = .GetAttribute("name")
+                        item.Explanation = .GetAttribute("sub")
+                        item.key = .GetAttribute("key")
+                        Call dialog.Add(item)
+                    End With
+                    Set item = Nothing
+                Next shortcutNode
+                
+                If dialog.ShowDialog() Then
+                    Call Application.Run(dialog.SelectedItem.Explanation)
+                End If
+                Exit For
+            End If
+        End If
+    
+    Next categoryNode
+    End If
+
+    On Error GoTo 0
+Finally:
+    Application.EnableCancelKey = xlInterrupt
+    'If Err.Number <> 0 Then MsgBox (Err.Description)
+    Set dialog = Nothing
+    Set dom = Nothing
+    Set fileInfo = Nothing
+    Set fileSystemObject = Nothing
+End Sub

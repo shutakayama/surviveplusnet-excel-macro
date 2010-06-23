@@ -1,0 +1,84 @@
+Attribute VB_Name = "View"
+Option Explicit
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      表示を全画面表示に変更します。既に全画面表示で表示されている時は、通常表示に戻ります。
+'   注釈：      この機能は Excel 標準の機能です。マクロにすることで任意のショートカットにより実行出来ます。
+'   使用方法：  ショートカット F4 に割り当てるには auto_open プロシージャで
+'                       Call Application.OnKey( "{F4}", "Surviveplus.xla!全画面表示" )
+'                       を実行します。
+'   変更履歴：  SHIN-ICHI 2009/03/16 - Surviveplus.xla View モジュールに移動。
+'   Copyright(C) 2009 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub 全画面表示()
+    Application.DisplayFullScreen = Not Application.DisplayFullScreen
+End Sub
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      R1C1 参照形式を使用する・しないを切り替えます。
+'   注釈：      この機能は Excel 標準の機能です。マクロにすることで任意のショートカットにより実行出来ます。
+'   使用方法：  ショートカット F1 に割り当てるには auto_open プロシージャで
+'                       Call Application.OnKey( "{F1}", "Surviveplus.xla!参照形式切替" )
+'                       を実行します。
+'   変更履歴：  SHIN-ICHI 2009/03/16 - Surviveplus.xla View モジュールに移動。
+'   Copyright(C) 2009 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub 参照形式切替()
+    If Application.ReferenceStyle = xlR1C1 Then
+        Application.ReferenceStyle = xlA1
+    Else
+        Application.ReferenceStyle = xlR1C1
+    End If
+End Sub
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      アクティブワークブックの全てのワークシートのカーソルを左上（A1）に移動します。
+'   注釈：
+'   使用方法：  ショートカット F1 に割り当てるには auto_open プロシージャで
+'                       Call Application.OnKey( "{F1}", "Surviveplus.xla!全てのシートのカーソルを左上に" )
+'                       を実行します。
+'   変更履歴：  SHIN-ICHI 2009/03/23 - Excel の表示更新を一時的に停止し、パフォーマンスを向上。
+'   Copyright(C) 2009 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub 全てのシートのカーソルを左上に()
+   
+    On Error Resume Next
+    Application.ScreenUpdating = False
+    
+    Dim originalSheet As Worksheet: Set originalSheet = ActiveSheet
+    Dim currentSheet As Worksheet
+    Dim cell As Range
+    For Each currentSheet In ActiveWorkbook.Worksheets
+        Call currentSheet.Select
+        Set cell = currentSheet.Cells(1, 1)
+        Call cell.Select
+    Next currentSheet
+    
+    Call originalSheet.Select
+    Application.ScreenUpdating = True
+
+End Sub
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      アウトライン行の展開します。すでに展開しているときは縮小します。
+'   注釈：
+'   使用方法：  アウトライン行（行のグループ化）にカーソルを合わせ、マクロを実行します。
+'   変更履歴：  SHIN-ICHI 2009/03/26 - オリジナル
+'   Copyright(C) 2009 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub アウトライン行の展開縮小()
+
+    On Error GoTo Finally:
+    Dim activeRow As Range: Set activeRow = Rows(ActiveCell.Row)
+    activeRow.ShowDetail = Not activeRow.ShowDetail
+Finally:
+
+End Sub
