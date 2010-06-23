@@ -108,3 +108,37 @@ Public Sub 選択範囲の値を連結してコピー()
     Set clipboard = Nothing
 
 End Sub
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      アクティブワークブックの全てのシートの名称を置換します。
+'   入力：      アクティブワークブックの全てのワークシートの名称
+'   出力：      アクティブワークブックの全てのワークシートの名称
+'   注釈：      フォームモジュール ReplaceForm が必要です。
+'   使用方法：  実行するとダイアログが表示されます。検索する文字列と置換後の文字列を入力して実行ボタンを押すと、ワークシートの名称が変更されます。
+'   変更履歴：  SHIN-ICHI 2010/06/23 - オリジナル
+'   Copyright(C) 2010 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub ワークシートの名称を置換()
+
+'Try
+On Error GoTo Finally:
+    Dim dialog As New ReplaceForm
+    dialog.Caption = "ワークシートの名称を置換"
+    Call dialog.Show(vbModal)
+    
+    If dialog.DialogResult Then
+        
+        Dim targetSheet As Worksheet
+        For Each targetSheet In ActiveWorkbook.Worksheets
+            targetSheet.name = Replace(targetSheet.name, dialog.FindText, dialog.ReplaceText)
+        Next targetSheet
+        
+    End If
+    
+Finally:
+    Unload dialog
+    Set dialog = Nothing
+
+End Sub
