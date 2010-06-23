@@ -1,0 +1,44 @@
+Attribute VB_Name = "SourceControl"
+Option Explicit
+
+'------------------------------------------------------------------------
+'   目的：      マクロの VBA コードを全てエクスポートします。
+'   参照：      Microsoft Visual Basic for Applications Extensibility
+'   注釈：
+'   使用方法：
+'   変更履歴：  SHIN-ICHI 2010/06/23 - 新規作成
+'   Copyright(C) 2010 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Private Sub ExportVBACodes()
+    
+    Dim targetBook As Workbook: Set targetBook = Workbooks("Surviveplus.xla")
+    Dim outputFolder As String: outputFolder = targetBook.Path
+    outputFolder = InputBox("出力先フォルダを指定してください", targetBook.name & " コードファイルの出力", outputFolder)
+    
+    If outputFolder <> "" Then
+        
+        If Right(outputFolder, 1) <> "\" Then outputFolder = outputFolder & "\"
+        Dim rootFolder As String: rootFolder = outputFolder & Left(targetBook.name, Len(targetBook.name) - 4) & "\"
+        If Dir(rootFolder, vbDirectory) = "" Then Call MkDir(rootFolder)
+        
+        Dim module As VBComponent
+        For Each module In targetBook.VBProject.VBComponents
+            If module.CodeModule.CountOfDeclarationLines <> module.CodeModule.CountOfLines Then
+                Dim extension As String: extension = ".txt"
+                Select Case module.Type
+                Case vbext_ComponentType.vbext_ct_MSForm
+                    extension = ".frm"
+                Case vbext_ComponentType.vbext_ct_StdModule
+                    extension = ".mdl"
+                Case vbext_ComponentType.vbext_ct_ClassModule, vbext_ComponentType.vbext_ct_Document
+                    extension = ".cls"
+                Case vbext_ComponentType.vbext_ct_ActiveXDesigner
+                    extension = ".dsr"
+                End Select
+                Call module.Export(rootFolder & module.name & extension)
+            End If
+        Next module
+    
+    End If
+
+End Sub

@@ -1,0 +1,110 @@
+Attribute VB_Name = "Data"
+Option Explicit
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      一つ上のセルの値をインクリメントして、アクティブなセルにセットします。
+'   入力：      アクティブセルの一つ上のセル
+'   出力：      アクティブセルの値
+'   注釈：      処理に成功すると一つ下のセルが選択されます。
+'   使用方法：  ショートカット Ctrl + Shift + Alt + I に割り当てるには自作の auto_open プロシージャで
+'                       Call Application.OnKey( "^+%I", "Surviveplus.xla!数値インクリメント挿入" )
+'                       を実行します。
+'                       ショートカット Ctrl + Shift + D に割り当てるには、マクロのオプション画面で "D"（大文字） を設定してください。
+'   変更履歴：  SHIN-ICHI 2009/03/23 - 数値以外のテキストが含まれる場合、末尾の数値をインクリメントするように変更。
+'   Copyright(C) 2008 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub 数値インクリメント挿入()
+
+    Dim textNumberIncrement As Data_TextNumberIncrement
+    On Error GoTo Finally:
+    Set textNumberIncrement = New Data_TextNumberIncrement
+    ActiveCell.FormulaR1C1 = textNumberIncrement.Increment(ActiveCell.Offset(-1, 0).Text)
+    Call ActiveCell.Offset(1, 0).Select
+    On Error GoTo 0
+    
+Finally:
+    Set textNumberIncrement = Nothing
+End Sub
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      アクティブなセルの末尾の数値をインクリメントします。
+'   入力：      アクティブセルの値
+'   出力：      アクティブセルの値
+'   注釈：
+'   使用方法：  ショートカット Ctrl + Shift + I に割り当てるには、マクロのオプション画面で "I"（大文字） を設定してください。
+'                       他に、自作の auto_open プロシージャで
+'                       Call Application.OnKey("^+I", "Surviveplus.xla!末尾の数値をインクリメント")
+'                       を実行する方法もあります。
+'   変更履歴：  SHIN-ICHI 2009/03/23 - 選択範囲の複数のセルに対応。
+'   Copyright(C) 2009 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub 末尾の数値をインクリメント()
+
+    If Selection Is Nothing Then Exit Sub
+
+    Dim textNumberIncrement As Data_TextNumberIncrement
+
+    On Error GoTo Finally:
+    Application.ScreenUpdating = False
+    Set textNumberIncrement = New Data_TextNumberIncrement
+    
+    Dim cell As Range
+    For Each cell In Selection
+        cell.FormulaR1C1 = textNumberIncrement.Increment(cell.Text)
+    Next cell
+    
+    On Error GoTo 0
+Finally:
+    'If Err.Number <> 0 Then MsgBox (Err.Description)
+    Application.ScreenUpdating = True
+    Set textNumberIncrement = Nothing
+End Sub
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      クリップボードにコピーされたセルの式などの、「値のみ」の貼り付けを行います。
+'   入力：      クリップボードの内容
+'   出力：      アクティブセルの値
+'   注釈：      処理に成功するとセルの内容が変更されます。
+'   使用方法：  ショートカット Ctrl + Shift + V に割り当てるには自作の auto_open プロシージャで
+'                       Call Application.OnKey( "^+V", "Surviveplus.xla!値の貼り付け" )
+'                       を実行します。
+'   変更履歴：  SHIN-ICHI 2009/03/16 - オリジナル
+'   Copyright(C) 2008 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub 値の貼り付け()
+
+    On Error Resume Next
+    Call Selection.PasteSpecial(Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False)
+
+End Sub
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      選択された範囲のそれぞれの値をすべて連結して、クリップボードにコピーします。
+'   入力：      アクティブセルの値
+'   出力：      クリップボードの内容
+'   注釈：      処理に成功するとクリップボードの内容が変更されます。
+'   使用方法：
+'   変更履歴：  SHIN-ICHI 2009/10/16 - オリジナル
+'   Copyright(C) 2009 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub 選択範囲の値を連結してコピー()
+
+    Dim resultText As String
+    Dim cell As Range
+    For Each cell In Selection
+        resultText = resultText & cell.Text
+    Next cell
+    
+    Dim clipboard As Object: Set clipboard = CreateObject("Net.Surviveplus.LibrariesForMacro.Clipboard")
+    Call clipboard.SetText(resultText)
+    Set clipboard = Nothing
+
+End Sub

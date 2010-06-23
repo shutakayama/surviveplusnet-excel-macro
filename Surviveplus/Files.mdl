@@ -1,0 +1,38 @@
+Attribute VB_Name = "Files"
+Option Explicit
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      アクティブワークブックのフォルダを Windows エクスプローラで開きます。
+'   注釈：
+'   使用方法：  ショートカット Ctrl + M に割り当てるには auto_open プロシージャで
+'                       Call Application.OnKey( "^M", "アクティブワークブックのフォルダを開く" )
+'                       を実行します。
+'   変更履歴：  SHIN-ICHI 2009/03/24 - オリジナル。
+'   Copyright(C) 2009 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub アクティブワークブックのフォルダを開く()
+
+    If ActiveWorkbook Is Nothing Then Exit Sub
+    
+    Dim wScriptShell As Object
+    Dim fileSystemObject As Object
+    Dim fileInfo As Object
+    
+' Try
+    On Error GoTo Finally:
+    Set fileSystemObject = CreateObject("Scripting.FileSystemObject")
+    Set fileInfo = fileSystemObject.GetFile(ActiveWorkbook.FullName)
+    
+    Set wScriptShell = CreateObject("WScript.Shell")
+    Call wScriptShell.Run("explorer """ & fileInfo.ParentFolder & """", 9, False)
+    
+    On Error GoTo 0
+Finally:
+    'If Err.Number <> 0 Then MsgBox (Err.Description)
+    Set wScriptShell = Nothing
+    Set fileInfo = Nothing
+    Set fileSystemObject = Nothing
+
+End Sub
