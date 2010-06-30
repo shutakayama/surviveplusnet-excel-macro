@@ -142,3 +142,79 @@ Finally:
     Set dialog = Nothing
 
 End Sub
+
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      アクティブワークブックの選択されているセルの範囲につけられた「名前」を全て取得して、クリップボードにコピーします。
+'   入力：      アクティブワークブックの選択されているセルの範囲
+'   出力：      クリップボード
+'   注釈：      このファイルのマクロを実行するには surviveplusnet-libraries-for-macro が必要です。
+'                   http://code.google.com/p/surviveplusnet-libraries-for-macro/
+'   使用方法：  名前を取得したい範囲を選択して実行してください。範囲に名前がつけられているときはクリップボードにコピーされます。
+'                   1つの名前が1行にコピーされます。名前がつけられていないときはダイアログが表示されます。
+'   変更履歴：  SHIN-ICHI 2010/06/30 - オリジナル
+'   Copyright(C) 2010 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub 選択された範囲の名前を取得する()
+
+    Dim targetCells As Range: Set targetCells = Selection
+    Dim result As String: result = ""
+    
+    Dim cell As Range
+    For Each cell In targetCells
+        
+        Dim rangeName As String: rangeName = GetRangeName(cell)
+        If rangeName <> "" Then result = result & rangeName & vbCrLf
+    Next cell
+    
+    If result <> "" Then
+        ' クリップボードにコピーします。
+        Dim clipboard As Object: Set clipboard = CreateObject("Net.Surviveplus.LibrariesForMacro.Clipboard")
+        Call clipboard.SetText(result)
+        Set clipboard = Nothing
+    Else
+        Call MsgBox("範囲に名前がありませんでした。", vbInformation)
+    End If
+
+End Sub
+
+'------------------------------------------------------------------------
+'   目的：      指定されたセルの名前を取得します。
+'   入力：      引数 cell - セル（範囲）
+'   戻り値：      セルの範囲の名前を返します。範囲の名前がないときは空文字 "" を返します。
+'   注釈：      引数に指定するセルの範囲は1つのセルにしてください。それ以外はテストしていません。
+'   使用方法：  rangeName = GetRangeName( cell )
+'   変更履歴：  SHIN-ICHI 2010/06/30 - オリジナル
+'   Copyright(C) 2010 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Private Function GetRangeName(cell As Range) As String
+'Try
+    On Error GoTo Catch:
+    
+    Dim rangeName As name
+    For Each rangeName In cell.Worksheet.Parent.Names
+        If rangeName = cell.name Then
+            'return
+            GetRangeName = rangeName.name: GoTo Finally:
+        End If
+    Next rangeName
+    
+    'return
+    GetRangeName = "": GoTo Finally:
+    
+    
+GoTo Finally:
+Catch:
+    ' 名前が指定されていない時は、cell.Name が取得できずにここにキャッチされます。
+    'Debug.Print "GetName Error: " & Err.Description
+    GetRangeName = ""
+    
+GoTo Finally:
+Finally:
+
+    Exit Function
+'End Try
+End Function
+
