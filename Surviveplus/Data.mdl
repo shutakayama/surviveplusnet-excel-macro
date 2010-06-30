@@ -143,6 +143,42 @@ Finally:
 
 End Sub
 
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      アクティブワークブックの選択されているセルの範囲のテキストを全て取得して、クリップボードにコピーします。
+'                   通常のコピーと異なり、テキストを取得できた場合のみ、1行に1つずつコピーします。
+'   入力：      アクティブワークブックの選択されているセルの範囲
+'   出力：      クリップボード
+'   注釈：      このファイルのマクロを実行するには surviveplusnet-libraries-for-macro が必要です。
+'                   http://code.google.com/p/surviveplusnet-libraries-for-macro/
+'   使用方法：  値を取得したい範囲を選択して実行してください。範囲の値が1行ずつクリップボードにコピーされます。
+'                   1つのテキストが1行にコピーされます。値が取得できない場合はダイアログが表示されます。
+'   変更履歴：  SHIN-ICHI 2010/06/30 - オリジナル
+'   Copyright(C) 2010 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub 選択された範囲の値を取得する()
+
+    Dim targetCells As Range: Set targetCells = Selection
+    Dim result As String: result = ""
+    
+    Dim cell As Range
+    For Each cell In targetCells
+        
+        Dim valueText As String: valueText = cell.Text
+        If valueText <> "" Then result = result & valueText & vbCrLf
+    Next cell
+    
+    If result <> "" Then
+        ' クリップボードにコピーします。
+        Dim clipboard As Object: Set clipboard = CreateObject("Net.Surviveplus.LibrariesForMacro.Clipboard")
+        Call clipboard.SetText(result)
+        Set clipboard = Nothing
+    Else
+        Call MsgBox("範囲に値がありませんでした。", vbInformation)
+    End If
+
+End Sub
 
 '------------------------------------------------------------------------
 ' マクロ
