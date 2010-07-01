@@ -254,3 +254,32 @@ Finally:
 'End Try
 End Function
 
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      アクティブワークブックの選択されているセルの範囲の「名前」に、クリップボードのテキストを設定します。
+'   入力：      クリップボードのテキスト
+'   出力：      アクティブワークブックの選択されているセルの範囲
+'   注釈：      このファイルのマクロを実行するには surviveplusnet-libraries-for-macro が必要です。
+'                   http://code.google.com/p/surviveplusnet-libraries-for-macro/
+'   使用方法：  クリップボードにテキストをコピーし、名前を設定したい範囲を選択してマクロを実行してください。
+'   変更履歴：  SHIN-ICHI 2010/07/01 - オリジナル
+'   Copyright(C) 2010 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub 選択された範囲に名前として貼り付ける()
+
+    ' クリップボードから貼り付けます。
+    Dim clipboard As Object: Set clipboard = CreateObject("Net.Surviveplus.LibrariesForMacro.Clipboard")
+    Dim nameText As String: nameText = clipboard.GetText()
+    Set clipboard = Nothing
+    
+    nameText = Trim(nameText)
+    If nameText <> "" Then
+        Dim targetCells As Range: Set targetCells = Selection
+        targetCells.name = nameText
+    
+    Else
+        Call MsgBox("クリップボードにテキストがありません。", vbInformation)
+    End If
+
+End Sub
