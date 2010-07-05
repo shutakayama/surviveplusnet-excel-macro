@@ -300,7 +300,9 @@ Private Function CopyWorksheet(ByVal targetSheet As Worksheet, ByVal newName As 
     Call targetSheet.Copy(After:=targetSheet)
     
     Dim newSheet As Worksheet: Set newSheet = targetSheet.Parent.Sheets(nowIndex + 1)
+    On Error Resume Next
     newSheet.name = newName
+    On Error GoTo 0
     
     ' Return
     Set CopyWorksheet = newSheet: Exit Function
@@ -324,7 +326,7 @@ Public Sub ワークシートを複数コピーする()
     Dim dialog As CopyWorkSheetDialogForm
     
 'Try
-    On Error GoTo Finally:
+    On Error GoTo Catch:
     Application.ScreenUpdating = False
     Set dialog = New CopyWorkSheetDialogForm
     
@@ -338,6 +340,10 @@ Public Sub ワークシートを複数コピーする()
         Next i
    
     End If
+    GoTo Finally:
+
+Catch:
+    Call MsgBox("ワークシートを複数コピーする マクロでエラーが発生しました。" & Err.Description)
     GoTo Finally:
     
 Finally:
