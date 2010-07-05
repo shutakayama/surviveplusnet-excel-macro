@@ -13,12 +13,12 @@ Private Sub ExportVBACodes()
     
     Dim targetBook As Workbook: Set targetBook = Workbooks("Surviveplus.xla")
     Dim outputFolder As String: outputFolder = targetBook.Path
-    outputFolder = InputBox("出力先フォルダを指定してください", targetBook.name & " コードファイルの出力", outputFolder)
+    outputFolder = InputBox("出力先フォルダを指定してください", targetBook.Name & " コードファイルの出力", outputFolder)
     
     If outputFolder <> "" Then
         
         If Right(outputFolder, 1) <> "\" Then outputFolder = outputFolder & "\"
-        Dim rootFolder As String: rootFolder = outputFolder & Left(targetBook.name, Len(targetBook.name) - 4) & "\"
+        Dim rootFolder As String: rootFolder = outputFolder & Left(targetBook.Name, Len(targetBook.Name) - 4) & "\"
         If Dir(rootFolder, vbDirectory) = "" Then Call MkDir(rootFolder)
         
         Dim module As VBComponent
@@ -35,7 +35,7 @@ Private Sub ExportVBACodes()
                 Case vbext_ComponentType.vbext_ct_ActiveXDesigner
                     extension = ".dsr"
                 End Select
-                Call module.Export(rootFolder & module.name & extension)
+                Call module.Export(rootFolder & module.Name & extension)
             End If
         Next module
     
