@@ -283,3 +283,68 @@ Public Sub 選択された範囲に名前として貼り付ける()
     End If
 
 End Sub
+
+'------------------------------------------------------------------------
+'   目的：      指定されたワークシートを、指定された名称で複製します。
+'   入力：      引数 targetSheet - 複製するワークシート
+'   入力：      引数 newName - 新しいワークシートの名称
+'   戻り値：      作成されたワークシートを返します
+'   注釈：
+'   使用方法：  set newSheet = CopyWorksheet( ActiveSheet, "NewName")
+'   変更履歴：  SHIN-ICHI 2010/07/05 - オリジナル
+'   Copyright(C) 2010 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Private Function CopyWorksheet(ByVal targetSheet As Worksheet, ByVal newName As String) As Worksheet
+
+    Dim nowIndex As Integer: nowIndex = targetSheet.Index
+    Call targetSheet.Copy(After:=targetSheet)
+    
+    Dim newSheet As Worksheet: Set newSheet = targetSheet.Parent.Sheets(nowIndex + 1)
+    newSheet.name = newName
+    
+    ' Return
+    Set CopyWorksheet = newSheet: Exit Function
+    
+End Function
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      アクティブワークシートを、ダイアログで指定された名称で複数同時にコピーします。
+'   入力：      アクティブワークシート
+'   出力：      新しいワークシートが、アクティブワークシートの後ろに追加されます。
+'   注釈：      このマクロの実行には CopyWorkSheetDialogForm.frm と CopyWorksheet 関数が必要です。
+'   使用方法：  実行するとダイアログが表示されます。1行に１つ、新しいワークシートの名称をしてしてOKボタンを押してください。
+'   変更履歴：  SHIN-ICHI 2010/07/05 - オリジナル
+'   Copyright(C) 2010 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub ワークシートを複数コピーする()
+
+    Dim targetSheet As Worksheet: Set targetSheet = ActiveSheet
+    Dim dialog As CopyWorkSheetDialogForm
+    
+'Try
+    On Error GoTo Finally:
+    Application.ScreenUpdating = False
+    Set dialog = New CopyWorkSheetDialogForm
+    
+    dialog.NewNames = Split(targetSheet.name + "のコピー", vbCrLf)
+    If dialog.ShowDialog Then
+    
+        Dim i As Integer
+        For i = UBound(dialog.NewNames) To LBound(dialog.NewNames) Step -1
+            Dim newName As String: newName = Trim(dialog.NewNames(i))
+            If newName <> "" Then Call CopyWorksheet(targetSheet, newName)
+        Next i
+   
+    End If
+    GoTo Finally:
+    
+Finally:
+    Application.ScreenUpdating = True
+    If Not dialog Is Nothing Then
+        Call Unload(dialog)
+        Set dialog = Nothing
+    End If
+End Sub
+
