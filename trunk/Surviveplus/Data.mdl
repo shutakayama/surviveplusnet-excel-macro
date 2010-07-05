@@ -152,7 +152,7 @@ On Error GoTo Finally:
         
         Dim targetSheet As Worksheet
         For Each targetSheet In ActiveWorkbook.Worksheets
-            targetSheet.name = Replace(targetSheet.name, dialog.FindText, dialog.ReplaceText)
+            targetSheet.Name = Replace(targetSheet.Name, dialog.FindText, dialog.ReplaceText)
         Next targetSheet
         
     End If
@@ -249,11 +249,11 @@ Private Function GetRangeName(cell As Range) As String
 'Try
     On Error GoTo Catch:
     
-    Dim rangeName As name
-    For Each rangeName In cell.Worksheet.Parent.Names
-        If rangeName = cell.name Then
+    Dim rangeName As Name
+    For Each rangeName In cell.Worksheet.Parent.names
+        If rangeName = cell.Name Then
             'return
-            GetRangeName = rangeName.name: GoTo Finally:
+            GetRangeName = rangeName.Name: GoTo Finally:
         End If
     Next rangeName
     
@@ -277,13 +277,13 @@ End Function
 '------------------------------------------------------------------------
 ' マクロ
 '------------------------------------------------------------------------
-'   目的：      アクティブワークブックの選択されているセルの範囲の「名前」に、クリップボードのテキストを設定します。
+'   目的：      アクティブワークブックの選択されているセルの範囲の「名前」に、クリップボードのテキストを設定します。テキストに改行が含まれている場合は、範囲1つずつに1行ずつの名前をそれぞれ設定します。
 '   入力：      クリップボードのテキスト
 '   出力：      アクティブワークブックの選択されているセルの範囲
 '   注釈：      このファイルのマクロを実行するには surviveplusnet-libraries-for-macro が必要です。
 '                   http://code.google.com/p/surviveplusnet-libraries-for-macro/
 '   使用方法：  クリップボードにテキストをコピーし、名前を設定したい範囲を選択してマクロを実行してください。
-'   変更履歴：  SHIN-ICHI 2010/07/01 - オリジナル
+'   変更履歴：  SHIN-ICHI 2010/07/05 - 複数の範囲に名前をつける機能を追加。
 '   Copyright(C) 2010 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
 '------------------------------------------------------------------------
 Public Sub 選択された範囲に名前として貼り付ける()
@@ -293,10 +293,32 @@ Public Sub 選択された範囲に名前として貼り付ける()
     Dim nameText As String: nameText = clipboard.GetText()
     Set clipboard = Nothing
     
+   
     nameText = Trim(nameText)
     If nameText <> "" Then
         Dim targetCells As Range: Set targetCells = Selection
-        targetCells.name = nameText
+        
+        If InStr(nameText, vbCrLf) > 0 Then
+            ' 改行が含まれている場合は、複数の範囲、それぞれに異なる名前を設定します。範囲と名前の数が一致しないときは、範囲に名前がつけられない場合があります。
+            Dim names As Variant: names = Split(nameText, vbCrLf)
+            Dim index As Integer: index = -1
+            
+            Dim targetCell As Range
+            For Each targetCell In targetCells
+                index = index + 1
+                If UBound(names) < index Then Exit For
+                
+                On Error Resume Next
+                targetCell.Name = names(index)
+                On Error GoTo 0
+            Next targetCell
+        
+        Else
+            ' 改行が含まれていない場合は、範囲全体に同じ名前を設定します。
+            On Error Resume Next
+            targetCells.Name = nameText
+            On Error GoTo 0
+        End If
     
     Else
         Call MsgBox("クリップボードにテキストがありません。", vbInformation)
@@ -316,12 +338,12 @@ End Sub
 '------------------------------------------------------------------------
 Private Function CopyWorksheet(ByVal targetSheet As Worksheet, ByVal newName As String) As Worksheet
 
-    Dim nowIndex As Integer: nowIndex = targetSheet.Index
+    Dim nowIndex As Integer: nowIndex = targetSheet.index
     Call targetSheet.Copy(After:=targetSheet)
     
     Dim newSheet As Worksheet: Set newSheet = targetSheet.Parent.Sheets(nowIndex + 1)
     On Error Resume Next
-    newSheet.name = newName
+    newSheet.Name = newName
     On Error GoTo 0
     
     ' Return
@@ -350,7 +372,7 @@ Public Sub ワークシートを複数コピーする()
     Application.ScreenUpdating = False
     Set dialog = New CopyWorkSheetDialogForm
     
-    dialog.NewNames = Split(targetSheet.name + "のコピー", vbCrLf)
+    dialog.NewNames = Split(targetSheet.Name + "のコピー", vbCrLf)
     If dialog.ShowDialog Then
     
         Dim i As Integer

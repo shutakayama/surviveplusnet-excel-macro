@@ -94,7 +94,7 @@ Public Sub ショートカットメニューを表示する()
     Call OpenAndExecuteShortcutMenu("Surviveplus.xla!ショートカットメニューを表示する")
 End Sub
 
-Private Sub OpenAndExecuteShortcutMenu(ByVal name As String)
+Private Sub OpenAndExecuteShortcutMenu(ByVal Name As String)
 
     Dim fileSystemObject As Object
     Dim fileInfo As Object
@@ -117,7 +117,7 @@ Private Sub OpenAndExecuteShortcutMenu(ByVal name As String)
         If categoryNode.GetAttribute("key") <> "{Direct}" Then
     
             Dim categoryName As String: categoryName = categoryNode.GetAttribute("name")
-            If categoryName = name Then
+            If categoryName = Name Then
                 Set dialog = CreateObject("Net.Surviveplus.LibrariesForMacro.ListDialog")
                 dialog.Title = "実行するマクロを選択してください。"
                 Dim item As Object
@@ -126,7 +126,7 @@ Private Sub OpenAndExecuteShortcutMenu(ByVal name As String)
                     With shortcutNode
                         Set item = CreateObject("Net.Surviveplus.LibrariesForMacro.ListDialogItem")
                         
-                        item.name = .GetAttribute("name")
+                        item.Name = .GetAttribute("name")
                         item.Explanation = .GetAttribute("sub")
                         item.key = .GetAttribute("key")
                         Call dialog.Add(item)
