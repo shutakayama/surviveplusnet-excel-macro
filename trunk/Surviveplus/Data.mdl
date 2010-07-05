@@ -77,9 +77,14 @@ End Sub
 '------------------------------------------------------------------------
 Public Sub テキストとしてコピー()
 
-    On Error Resume Next
+    Dim resultText As String
+    Dim cell As Range
+    For Each cell In Selection
+        resultText = resultText & cell.Text & vbCrLf
+    Next cell
+
     Dim clipboard As Object: Set clipboard = CreateObject("Net.Surviveplus.LibrariesForMacro.Clipboard")
-    Call clipboard.SetText(Selection.Text)
+    Call clipboard.SetText(resultText)
     Set clipboard = Nothing
 
 End Sub
