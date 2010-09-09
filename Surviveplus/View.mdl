@@ -1,6 +1,14 @@
 Attribute VB_Name = "View"
 Option Explicit
 
+Public Const HWND_NOTOPMOST = -2
+Public Const HWND_TOPMOST = -1
+Public Const SWP_NOMOVE = 2
+Public Const SWP_NOSIZE = 1
+Public Declare Function SetWindowPos Lib "user32" (ByVal hwindow As Long, ByVal hinsertafter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal flag As Long) As Long
+
+Private topMost As Boolean
+
 '------------------------------------------------------------------------
 ' マクロ
 '------------------------------------------------------------------------
@@ -81,4 +89,24 @@ Public Sub アウトライン行の展開縮小()
     activeRow.ShowDetail = Not activeRow.ShowDetail
 Finally:
 
+End Sub
+
+
+'------------------------------------------------------------------------
+' マクロ
+'------------------------------------------------------------------------
+'   目的：      Excel ウィンドウを、常に他のウィンドウよりも手前に表示します。
+'   注釈：
+'   使用方法：  実行すると常に手前に表示します。もう一度実行すると解除されます。
+'   変更履歴：  SHIN-ICHI 2010/09/09 - オリジナル
+'   Copyright(C) 2010 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Sub 常に手前に表示()
+    If topMost Then
+        SetWindowPos Application.Hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE + SWP_NOMOVE
+        topMost = False
+    Else
+        SetWindowPos Application.Hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE + SWP_NOMOVE
+        topMost = True
+    End If
 End Sub
