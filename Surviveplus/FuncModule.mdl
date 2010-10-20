@@ -1,0 +1,18 @@
+Attribute VB_Name = "FuncModule"
+Option Explicit
+'------------------------------------------------------------------------
+'   目的：      匿名関数デリゲート オブジェクトを作成して返します。
+'   入力：      引数 args - 匿名関数の引数の名称を文字列で指定します。"," 区切りで複数指定できます。＜例＞"a,b"
+'   入力：      引数 statement - 匿名関数の実行される内容を文字列で指定します。
+'                  最後に戻り値を "Return 変数名" の形で記述してください。改行の代わりに ":" が指定できます。
+'                  ＜例＞"a=a*10:Return a+b"
+'   戻り値：    結果を FuncDelegate オブジェクトとして返します。匿名関数を実行するには Run メソッドを呼び出してください。
+'   注釈：      この機能を使用するには FuncDelegate クラスが必要です。
+'   使用方法：  ＜例＞If Func("a,b", "a=a*10:Return a+b").Run(1,1) = 11 Then MsgBox "OK"
+'   変更履歴：  SHIN-ICHI 2010/10/9 - 新規作成
+'   MIT License / Copyright(C) 2010 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Function Func(args As String, statement As String) As FuncDelegate
+    Set Func = New FuncDelegate
+    Call Func.SetStatement(args, statement)
+End Function
