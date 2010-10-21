@@ -68,7 +68,7 @@ Public Function Increment(ByVal targetText As String) As String
     If regNotNumber.Test(targetText) Then
         Set matches = regEndNumber.Execute(targetText)
         
-        If matches.Count > 0 Then
+        If matches.count > 0 Then
             With matches(0)
                 Dim oldNumber As String: oldNumber = .SubMatches(2)
                 Dim newNumber As String: newNumber = CInt(oldNumber) + 1

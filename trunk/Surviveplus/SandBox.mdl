@@ -1,0 +1,91 @@
+Attribute VB_Name = "SandBox"
+Option Explicit
+
+' このコードは実験中です。
+Sub hhh()
+'    Dim b As Variant
+'    For Each b In Range("A1", "A2")
+'        MsgBox b.Text
+'    Next b
+
+    Dim cell As New IEnumerable
+    Set cell.target = Range("A1", "A2")
+    Dim enumerator As IEnumerator
+    Set enumerator = cell.GetEnumerator()
+    'While enumerator.MoveNext()
+    While enumerator.MoveNextWhere(Func("cell", "Return cell.Text=""1"""))
+        MsgBox enumerator.Current.Text
+    Wend
+    
+    
+
+    Dim bbb(3) As Integer
+    bbb(0) = 3
+    bbb(1) = 9
+    bbb(2) = 2
+    bbb(3) = 6
+
+    Dim cell2 As New IEnumerable
+    cell2.target = bbb
+    Dim enumerator2 As IEnumerator
+    Set enumerator2 = cell2.GetEnumerator()
+    'While enumerator2.MoveNext()
+    While enumerator2.MoveNextWhere(Func("bbb", "Return (bbb mod 2)=0"))
+        MsgBox enumerator2.Current
+    Wend
+    
+    Dim c As New Collection
+    Call c.Add("value1", "key1")
+    Call c.Add("value2", "key2")
+    
+    Dim cell3 As New IEnumerable
+    Set cell3.target = c
+    Dim enumerator3 As IEnumerator
+    Set enumerator3 = cell3.GetEnumerator()
+    'While enumerator3.MoveNext()
+    While enumerator3.MoveNextWhere(Func("item", "Return instr(item,""value"") > 0 "))
+        MsgBox enumerator3.Current
+    Wend
+    
+    
+    
+End Sub
+
+Public Function fff() As Variant
+    Dim sc As New ScriptControl
+    sc.Language = "VBScript"
+    sc.AddCode ( _
+    "Class NoNamedObject" & vbCrLf & _
+"Public a" & vbCrLf & _
+"Public b" & vbCrLf & _
+"public sc" & vbCrLf & _
+"public function ToString() " & vbCrLf & _
+"ToString = ""{a:"""""" & a & """""",b:"""""" & b & """"""}""" & vbCrLf & _
+"end function" & vbCrLf & _
+"Private Sub Class_Terminate()" & vbCrLf & _
+"'set sc = nothing" & vbCrLf & _
+"End Sub" & vbCrLf & _
+"End Class" & vbCrLf & _
+"" & vbCrLf & _
+"Function test(a, b)" & vbCrLf & _
+"set test = new NoNamedObject" & vbCrLf & _
+"with test" & vbCrLf & _
+".a = a" & vbCrLf & _
+".b = b" & vbCrLf & _
+"end with" & vbCrLf & _
+"end function")
+
+    Dim ggg As Variant
+    Set ggg = sc.Eval("test(2, ""TEST"")")
+    Set ggg.sc = sc
+    MsgBox ggg.a & " - " & ggg.b
+    MsgBox ggg.ToString()
+    Set fff = ggg
+
+End Function
+Public Sub h()
+    Dim f As Variant
+    Set f = fff
+    MsgBox f.ToString()
+End Sub
+
