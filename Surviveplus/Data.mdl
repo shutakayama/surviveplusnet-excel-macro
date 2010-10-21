@@ -157,7 +157,7 @@ On Error GoTo Finally:
         
         Dim targetSheet As Worksheet
         For Each targetSheet In ActiveWorkbook.Worksheets
-            targetSheet.Name = Replace(targetSheet.Name, dialog.FindText, dialog.ReplaceText)
+            targetSheet.Name = replace(targetSheet.Name, dialog.FindText, dialog.ReplaceText)
         Next targetSheet
         
     End If

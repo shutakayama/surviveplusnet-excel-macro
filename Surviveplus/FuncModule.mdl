@@ -16,3 +16,10 @@ Public Function Func(args As String, statement As String) As FuncDelegate
     Set Func = New FuncDelegate
     Call Func.SetStatement(args, statement)
 End Function
+
+
+Public Function Action(args As String, statement As String) As ActionDelegate
+    Set Action = New ActionDelegate
+    Call Action.SetStatement(args, statement)
+End Function
+

@@ -43,10 +43,10 @@ End Property
 '------------------------------------------------------------------------
 Public Property Get ReplaceText() As String
     ' Return
-    ReplaceText = Replace.Text
+    ReplaceText = replace.Text
 End Property
 Public Property Let ReplaceText(ByVal vNewValue As String)
-    Replace.Text = vNewValue
+    replace.Text = vNewValue
 End Property
 
 '------------------------------------------------------------------------
