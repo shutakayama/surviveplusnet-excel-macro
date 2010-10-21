@@ -4,19 +4,23 @@ Option Explicit
 ' このコードは実験中です。
 Sub hhh()
 
-    Dim test1 As New IEnumerable
-    Set test1.target = Range("A1", "A6")
-    Call test1 _
+'    Dim test1 As New IEnumerable
+'    Set test1.target = Range("A1", "A6")
+'    Call test1 _
+'
+    Call From(Range("A1", "A6")) _
         .Where(Func("cell", "Return cell.Text=""1""")) _
         .ForEach(Action("cell", "cell.Formula=30"))
 
-    Dim cell As New IEnumerable
-    Set cell.target = Range("A1", "A6")
+'    Dim cell As New IEnumerable
+'    Set cell.target = Range("A1", "A6")
 '    Dim enumerator As IEnumerator: Set enumerator = cell.GetEnumerator()
     'While enumerator.MoveNext()
 '        MsgBox enumerator.Current.Text
 '    Wend
-    Call cell _
+'    Call cell _
+'
+    Call From(Range("A1", "A6")) _
         .Where(Func("cell", "Return cell.Text=""30""")) _
         .ForEach(Action("cell", "MsgBox cell.Text"))
     
@@ -26,13 +30,15 @@ Sub hhh()
     bbb(2) = 2
     bbb(3) = 6
 
-    Dim cell2 As New IEnumerable
-    cell2.target = bbb
+'    Dim cell2 As New IEnumerable
+'    cell2.target = bbb
 '    Dim enumerator2 As IEnumerator: Set enumerator2 = cell2.GetEnumerator()
     'While enumerator2.MoveNext()
 '        MsgBox enumerator2.Current
 '    Wend
-    Call cell2 _
+'    Call cell2 _
+'
+    Call From(bbb) _
         .ForEach(Action("item", "MsgBox item"))
 
     
@@ -40,14 +46,16 @@ Sub hhh()
     Call c.Add("value1", "key1")
     Call c.Add("value2", "key2")
     
-    Dim cell3 As New IEnumerable
-    Set cell3.target = c
+'    Dim cell3 As New IEnumerable
+'    Set cell3.target = c
 '    Dim enumerator3 As IEnumerator: Set enumerator3 = cell3.GetEnumerator()
     'While enumerator3.MoveNext()
 '    While enumerator3.MoveNextWhere(Func("item", "Return instr(item,""value"") > 0 "))
 '        MsgBox enumerator3.Current
 '    Wend
-    Call cell3 _
+'    Call cell3 _
+'
+    Call From(c) _
         .Where(Func("item", "Return instr(item,""value"") > 0 ")) _
         .ForEach(Action("item", "MsgBox item"))
     

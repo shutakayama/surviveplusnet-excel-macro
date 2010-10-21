@@ -23,3 +23,14 @@ Public Function Action(args As String, statement As String) As ActionDelegate
     Call Action.SetStatement(args, statement)
 End Function
 
+Public Function From(target As Variant) As IEnumerable
+    Set From = New IEnumerable
+    With From
+        If IsObject(target) Then
+            Set .target = target
+        Else
+            .target = target
+        End If
+    End With
+End Function
+
