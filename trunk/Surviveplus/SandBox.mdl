@@ -3,22 +3,23 @@ Option Explicit
 
 ' このコードは実験中です。
 Sub hhh()
-'    Dim b As Variant
-'    For Each b In Range("A1", "A2")
-'        MsgBox b.Text
-'    Next b
+
+    Dim test1 As New IEnumerable
+    Set test1.target = Range("A1", "A6")
+    Call test1 _
+        .Where(Func("cell", "Return cell.Text=""1""")) _
+        .ForEach(Action("cell", "cell.Formula=30"))
 
     Dim cell As New IEnumerable
-    Set cell.target = Range("A1", "A2")
-    Dim enumerator As IEnumerator
-    Set enumerator = cell.GetEnumerator()
+    Set cell.target = Range("A1", "A6")
+'    Dim enumerator As IEnumerator: Set enumerator = cell.GetEnumerator()
     'While enumerator.MoveNext()
-    While enumerator.MoveNextWhere(Func("cell", "Return cell.Text=""1"""))
-        MsgBox enumerator.Current.Text
-    Wend
+'        MsgBox enumerator.Current.Text
+'    Wend
+    Call cell _
+        .Where(Func("cell", "Return cell.Text=""30""")) _
+        .ForEach(Action("cell", "MsgBox cell.Text"))
     
-    
-
     Dim bbb(3) As Integer
     bbb(0) = 3
     bbb(1) = 9
@@ -27,12 +28,13 @@ Sub hhh()
 
     Dim cell2 As New IEnumerable
     cell2.target = bbb
-    Dim enumerator2 As IEnumerator
-    Set enumerator2 = cell2.GetEnumerator()
+'    Dim enumerator2 As IEnumerator: Set enumerator2 = cell2.GetEnumerator()
     'While enumerator2.MoveNext()
-    While enumerator2.MoveNextWhere(Func("bbb", "Return (bbb mod 2)=0"))
-        MsgBox enumerator2.Current
-    Wend
+'        MsgBox enumerator2.Current
+'    Wend
+    Call cell2 _
+        .ForEach(Action("item", "MsgBox item"))
+
     
     Dim c As New Collection
     Call c.Add("value1", "key1")
@@ -40,13 +42,14 @@ Sub hhh()
     
     Dim cell3 As New IEnumerable
     Set cell3.target = c
-    Dim enumerator3 As IEnumerator
-    Set enumerator3 = cell3.GetEnumerator()
+'    Dim enumerator3 As IEnumerator: Set enumerator3 = cell3.GetEnumerator()
     'While enumerator3.MoveNext()
-    While enumerator3.MoveNextWhere(Func("item", "Return instr(item,""value"") > 0 "))
-        MsgBox enumerator3.Current
-    Wend
-    
+'    While enumerator3.MoveNextWhere(Func("item", "Return instr(item,""value"") > 0 "))
+'        MsgBox enumerator3.Current
+'    Wend
+    Call cell3 _
+        .Where(Func("item", "Return instr(item,""value"") > 0 ")) _
+        .ForEach(Action("item", "MsgBox item"))
     
     
 End Sub

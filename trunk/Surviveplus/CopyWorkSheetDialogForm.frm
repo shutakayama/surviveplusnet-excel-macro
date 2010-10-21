@@ -81,6 +81,3 @@ Public Function ShowDialog() As Boolean
     ShowDialog = Me.DialogResult
 End Function
 
-Private Sub UserForm_Click()
-
-End Sub

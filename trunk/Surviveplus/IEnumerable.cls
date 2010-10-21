@@ -10,6 +10,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Public target As Variant 'Range
+Public f As FuncDelegate
 
 Public Function GetEnumerator() As IEnumerator
 
@@ -21,18 +22,34 @@ Public Function GetEnumerator() As IEnumerator
             .targetList = target
         End If
         
-            
-        If TypeName(.targetList) = "Collection" Then
+        Select Case TypeName(.targetList)
+        Case "IEnumerator"
+            Set .f = f
+        Case "Collection", "Range"
             .index = 0
-
-        ElseIf TypeName(.targetList) = "Range" Then
-            .index = 0
-        Else
+        Case Else
             .index = LBound(.targetList) - 1
-        End If
+        End Select
         
     End With
 
 End Function
 
 
+Public Function Where(f As FuncDelegate) As IEnumerable
+
+    Set Where = New IEnumerable
+    With Where
+        Set .target = Me.GetEnumerator
+        Set .f = f
+    End With
+End Function
+
+Public Sub ForEach(a As ActionDelegate)
+    
+    Dim enumerator As IEnumerator: Set enumerator = Me.GetEnumerator()
+    While enumerator.MoveNext()
+         a.Run (enumerator.Current)
+    Wend
+
+End Sub
