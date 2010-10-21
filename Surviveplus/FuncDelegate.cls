@@ -63,7 +63,7 @@ Public Property Get Run(ParamArray args() As Variant) As Variant
             Call myScriptControl.AddObject(argName, args(index), True)
         Else
             argsNamesText = argsNamesText & IIf(notObjectIsFirst, "", ",") & argName
-            argsValuesText = argsValuesText & IIf(notObjectIsFirst, "", ",") & args(index)
+            argsValuesText = argsValuesText & IIf(notObjectIsFirst, "", ",") & IIf(TypeName(args(index)) = "String", """" & args(index) & """", args(index))
             notObjectIsFirst = False
         End If
         index = index + 1
