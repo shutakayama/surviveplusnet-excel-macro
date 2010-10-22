@@ -68,7 +68,7 @@ Public Function Run(ParamArray args() As Variant)
         If UBound(args) < index Then Exit For
     Next s
     
-    myScriptControl.AddCode ("Sub mydelegate(" & argsNamesText & "): " & replace(valueOfStatements, "Return ", "mydelegate = ") & ":End Sub")
+    myScriptControl.AddCode ("Sub mydelegate(" & argsNamesText & "): " & valueOfStatements & ":End Sub")
     myScriptControl.ExecuteStatement ("mydelegate(" & argsValuesText & ")")
 End Function
 

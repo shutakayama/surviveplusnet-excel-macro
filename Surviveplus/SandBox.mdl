@@ -100,3 +100,13 @@ Public Sub h()
     MsgBox f.ToString()
 End Sub
 
+Public Sub zzz()
+    Dim f As Variant
+    Set f = NewWith("a", 1, "b", NewWith("b1", 100))
+    MsgBox f.b.b1
+    
+    Set f = NewWith("c", Range("A1"))
+    f.c.Formula = 100
+    MsgBox f.c.Text
+
+End Sub

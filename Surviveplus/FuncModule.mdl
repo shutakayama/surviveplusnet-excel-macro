@@ -17,7 +17,16 @@ Public Function Func(args As String, statement As String) As FuncDelegate
     Call Func.SetStatement(args, statement)
 End Function
 
-
+'------------------------------------------------------------------------
+'   目的：      匿名関数デリゲート オブジェクトを作成して返します。
+'   入力：      引数 args - 匿名関数の引数の名称を文字列で指定します。"," 区切りで複数指定できます。＜例＞"a,b"
+'   入力：      引数 statement - 匿名関数の実行される内容を文字列で指定します。＜例＞"MsgBox a & "":"" & b"
+'   戻り値：    結果を ActionDelegate オブジェクトとして返します。匿名関数を実行するには Run メソッドを呼び出してください。
+'   注釈：      この機能を使用するには ActionDelegate クラスが必要です。
+'   使用方法：  ＜例＞Action("a,b", "MsgBox a & "":"" & b").Run(1,1)
+'   変更履歴：  SHIN-ICHI 2010/10/21 - 新規作成
+'   MIT License / Copyright(C) 2010 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
 Public Function Action(args As String, statement As String) As ActionDelegate
     Set Action = New ActionDelegate
     Call Action.SetStatement(args, statement)
@@ -34,3 +43,70 @@ Public Function From(target As Variant) As IEnumerable
     End With
 End Function
 
+'------------------------------------------------------------------------
+'   目的：      匿名クラス オブジェクトを作成して返します。
+'   入力：      引数 args - プロパティの名称と値を交互に指定してください。
+'                  ＜例＞ "a", 1, "b", "Hello", "c", Range("A1")
+'   戻り値：    指定されたプロパティを持ったオブジェクトを返します。
+'   注釈：      引数の数が不適切な場合はエラーが発生します。
+'   使用方法：  ＜例＞Dim c As Variant: Set c = NewWith("i", 0, "cell", Range("A1")) : MsgBox c.cell.Text
+'   変更履歴：  SHIN-ICHI 2010/10/22 - 新規作成
+'   MIT License / Copyright(C) 2010 SHIN-ICHI all rights reserverd. ( http:// surviveplus.net )
+'------------------------------------------------------------------------
+Public Function NewWith(ParamArray args() As Variant) As Variant
+   
+    Dim sc As New ScriptControl
+    sc.Language = "VBScript"
+    
+    Dim propText As String
+    Dim withSetText As String
+    Dim i As Integer
+    Dim argsNamesText As String
+    Dim argsValuesText As String
+    Dim notObjectIsFirst As Boolean: notObjectIsFirst = True
+    For i = LBound(args) To UBound(args) Step 2
+        Dim propName As String: propName = args(i)
+        Dim propValue As Variant
+        If IsObject(args(i + 1)) Then
+            Set propValue = args(i + 1)
+        Else
+            propValue = args(i + 1)
+        End If
+        
+        propText = propText & "Public " & propName & ":"
+        
+        If IsObject(propValue) Then
+            withSetText = withSetText & "Set ." & propName & "=" & propName & ":"
+        
+            Call sc.AddObject(propName, propValue, True)
+        Else
+            withSetText = withSetText & "." & propName & "=" & propName & ":"
+        
+            argsNamesText = argsNamesText & IIf(notObjectIsFirst, "", ",") & propName
+            argsValuesText = argsValuesText & IIf(notObjectIsFirst, "", ",") & IIf(TypeName(propValue) = "String", """" & propValue & """", propValue)
+            notObjectIsFirst = False
+        End If
+    Next i
+    
+    sc.AddCode ( _
+    "Class NoNamedObject:" & _
+    "Private valueOfSc:" & _
+    propText & _
+    "Public Sub SetScriptControl(sc):" & _
+    " If IsObject(valueOfSc) Then :Exit Sub: End if:" & _
+    " Set valueOfSc = sc:" & _
+    "End Sub:" & _
+    "End Class:" & _
+    "Function CreateNoNamedObject(" & argsNamesText & "):" & _
+    "Set CreateNoNamedObject = New NoNamedObject:" & _
+    "With CreateNoNamedObject:" & _
+    withSetText & _
+    "End With:" & _
+    "End Function:")
+    
+    Set NewWith = sc.Eval("CreateNoNamedObject(" & argsValuesText & ")")
+    With NewWith
+        Call .SetScriptControl(sc)
+    End With
+    
+End Function
