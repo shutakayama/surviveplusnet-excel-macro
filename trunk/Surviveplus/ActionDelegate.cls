@@ -23,6 +23,9 @@ Private myScriptControl As New ScriptControl
 Private valueOfArgs As String
 Private valueOfStatements As String
 
+Private valueOfClosureVariableName As String
+Private valueOfClosureObject As Object
+
 Private Sub Class_Initialize()
     myScriptControl.Language = "VBScript"
 End Sub
@@ -68,10 +71,15 @@ Public Function Run(ParamArray args() As Variant)
         If UBound(args) < index Then Exit For
     Next s
     
+    If valueOfClosureVariableName <> "" Then Call myScriptControl.AddObject(valueOfClosureVariableName, valueOfClosureObject)
+    
     myScriptControl.AddCode ("Sub mydelegate(" & argsNamesText & "): " & valueOfStatements & ":End Sub")
     myScriptControl.ExecuteStatement ("mydelegate(" & argsValuesText & ")")
 End Function
 
-
-
+Public Function WithClosure(ByVal variableName As String, ByVal closure As Variant) As ActionDelegate
+    Set WithClosure = Me
+    valueOfClosureVariableName = variableName
+    Set valueOfClosureObject = closure
+End Function
 
