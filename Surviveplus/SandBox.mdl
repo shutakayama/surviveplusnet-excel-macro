@@ -4,6 +4,13 @@ Option Explicit
 ' このコードは実験中です。
 Sub hhh()
 
+    Dim cl As Variant: Set cl = NewWith("Text", "Hello")
+
+    Call From(Range("A1", "A6")) _
+        .Where(Func("cell", "Return cl.Text = cell.Text").WithClosure("cl", cl)) _
+        .ForEach(Action("cell", "cell.Formula=30"))
+        
+
 '    Dim test1 As New IEnumerable
 '    Set test1.target = Range("A1", "A6")
 '    Call test1 _

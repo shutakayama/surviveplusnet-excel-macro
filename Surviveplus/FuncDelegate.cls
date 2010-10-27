@@ -23,6 +23,9 @@ Private myScriptControl As New ScriptControl
 Private valueOfArgs As String
 Private valueOfStatements As String
 
+Private valueOfClosureVariableName As String
+Private valueOfClosureObject As Object
+
 Private Sub Class_Initialize()
     myScriptControl.Language = "VBScript"
 End Sub
@@ -70,6 +73,8 @@ Public Function Run(ParamArray args() As Variant) As Variant
         If UBound(args) < index Then Exit For
     Next s
     
+    If valueOfClosureVariableName <> "" Then Call myScriptControl.AddObject(valueOfClosureVariableName, valueOfClosureObject)
+    
     Dim subOrFunction As String: subOrFunction = IIf(InStr(valueOfStatements, "Return ") > 0, "Function", "Sub")
     myScriptControl.AddCode (subOrFunction & " mydelegate(" & argsNamesText & "): " & replace(valueOfStatements, "Return ", "mydelegate = ") & ":End " & subOrFunction)
     If InStr(valueOfStatements, "Return ") > 0 Then
@@ -79,4 +84,9 @@ Public Function Run(ParamArray args() As Variant) As Variant
     End If
 End Function
 
+Public Function WithClosure(ByVal variableName As String, ByVal closure As Object) As FuncDelegate
+    Set WithClosure = Me
+    valueOfClosureVariableName = variableName
+    Set valueOfClosureObject = closure
+End Function
 
